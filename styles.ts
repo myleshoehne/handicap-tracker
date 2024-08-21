@@ -46,6 +46,7 @@ export const styles = StyleSheet.create({
     },
     cell: {
         flex: 1,
+        width: 20,
         textAlign: 'center',
     },
   });

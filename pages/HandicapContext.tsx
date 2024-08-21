@@ -11,7 +11,9 @@ export interface HandicapIndex {
 interface HandicapContextProps {
     handicaps?: HandicapIndex[],
     addHandicapIndex?: (handicapIndex: HandicapIndex) => void,
+    calculateHandicapIndex?: (score: number, slopeRating: number, courseRating: number) => number,
     removeHandicapIndex?: (id: number) => void,
+    updateHandicapIndex?: (handicapIndex: HandicapIndex, field: keyof HandicapIndex, newVal: number) => void,
     getHandicap?: () => number,
     children?: ReactNode
 }
@@ -36,9 +38,43 @@ const HandicapContextProvider = ({ children }: HandicapContextProps) => {
         setHandicaps(prevItems => [...prevItems, handicapIndex])
     }
 
+    const calculateHandicapIndex = (score: number, slopeRating: number, courseRating: number) => {
+        if(score === undefined || courseRating === undefined || slopeRating === undefined){
+            alert("Invalid input(s).")
+        } else {
+            const scoreDifferential = ((score - courseRating) * 113) / slopeRating;
+            return Number((scoreDifferential * .96).toFixed(1));
+        }
+    }
+
     const removeHandicapIndex = (id: number) => {
         const keptHandicaps = handicaps.filter((handicap) => handicap.id != id)
         setHandicaps(keptHandicaps)
+    }
+
+    const updateHandicapIndex = (handicapIndex: HandicapIndex, field: keyof HandicapIndex, newVal: number) => {
+        
+        let newHandicap: number; 
+
+        switch(field){
+            case 'score':
+                newHandicap = calculateHandicapIndex(newVal, handicapIndex.slopeRating, handicapIndex.courseRating);
+                break;
+            case 'slopeRating':
+                newHandicap = calculateHandicapIndex(handicapIndex.score, newVal, handicapIndex.courseRating)
+                break;
+            case 'courseRating':
+                newHandicap = calculateHandicapIndex(handicapIndex.score, handicapIndex.slopeRating, newVal)
+                break;
+            default:
+                throw new Error("field must be of type HandicapIndex.")
+        }
+        
+        const updatedHandicaps = handicaps.map((handicap) => {
+            return handicap.id === handicapIndex.id ? {...handicap, handicap: newHandicap, [field]: Number(newVal) } : handicap//call new method on 4
+        })
+        console.log(updatedHandicaps)
+        setHandicaps(updatedHandicaps)
     }
 
     const getHandicap = () => {
@@ -57,7 +93,7 @@ const HandicapContextProvider = ({ children }: HandicapContextProps) => {
     }
 
     return (
-        <HandicapContext.Provider value={{ handicaps, addHandicapIndex, removeHandicapIndex, getHandicap }}>
+        <HandicapContext.Provider value={{ handicaps, addHandicapIndex, calculateHandicapIndex, removeHandicapIndex, updateHandicapIndex, getHandicap }}>
             {children}
         </HandicapContext.Provider>
     );

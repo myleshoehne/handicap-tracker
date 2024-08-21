@@ -1,15 +1,11 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { useHandicapContext } from './HandicapContext'
+import { View, Text, TextInput } from 'react-native'
+import React, { useState } from 'react'
+import { HandicapIndex, useHandicapContext } from './HandicapContext'
 import { styles } from '../styles'
 
 const ViewHandicap = () => {
 
     const handicapContext = useHandicapContext()
-
-    const handleRemove = (id: number) => {
-        handicapContext.removeHandicapIndex(id)
-    }
 
     return (
         <View>
@@ -25,11 +21,23 @@ const ViewHandicap = () => {
                     </View>
                     {handicapContext.handicaps.map((handicap) => (
                         <View key={handicap.id} style={styles.row}>
-                            <Text style={styles.cell}>{handicap.score}</Text>
-                            <Text style={styles.cell}>{handicap.courseRating}</Text>
-                            <Text style={styles.cell}>{handicap.slopeRating}</Text>
+                            <TextInput 
+                                style={styles.cell} 
+                                onChangeText={(text) => handicapContext.updateHandicapIndex(handicap, 'score', Number(text))} 
+                                value={handicap.score.toString()} 
+                            />
+                            <TextInput 
+                                style={styles.cell} 
+                                onChangeText={(text) => handicapContext.updateHandicapIndex(handicap, 'courseRating', Number(text))} 
+                                value={handicap.courseRating.toString()} 
+                            />
+                            <TextInput 
+                                style={styles.cell} 
+                                onChangeText={(text) => handicapContext.updateHandicapIndex(handicap, 'slopeRating', Number(text))} 
+                                value={handicap.slopeRating.toString()} 
+                            />
                             <Text style={styles.cell}>{handicap.handicap}</Text>
-                            <button onClick={() => handleRemove(handicap.id)} style={styles.button}>Remove</button>
+                            <button onClick={() => handicapContext.removeHandicapIndex(handicap.id)} style={styles.button}>Remove</button>
                         </View>
                     ))}
                     <h3 style={{alignSelf: 'center'}}>Current Handicap: {handicapContext.getHandicap()}</h3>

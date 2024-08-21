@@ -15,19 +15,14 @@ const CalculateHandicap = () => {
     const handicapContext = useHandicapContext();
 
     const handleCalculate = () => {
-        if(score === undefined || courseRating === undefined || slopeRating === undefined){
-            alert("Invalid input(s).")
-        } else {
-            const scoreDifferential = ((score - courseRating) * 113) / slopeRating;
-            const _handicapIndex: HandicapIndex = {
-                id: 0, // temp id
-                score: score, 
-                courseRating: courseRating,
-                slopeRating: slopeRating,
-                handicap: Number((scoreDifferential * .96).toFixed(1))
-            }
-            setHandicapIndex(_handicapIndex)
+        const _handicapIndex: HandicapIndex = {
+            id: 0, // temp id
+            score: score, 
+            courseRating: courseRating,
+            slopeRating: slopeRating,
+            handicap: handicapContext.calculateHandicapIndex(score, slopeRating, courseRating)
         }
+        setHandicapIndex(_handicapIndex)
     }
 
     const handleAdd = () => {
